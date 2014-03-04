@@ -57,7 +57,7 @@ class HttpTransport(Transport):
         try:
             url = request.url
             log.debug('opening (%s)', url)
-            u2request = u2.Request(url)
+            u2request = u2.Request(url,headers=request.headers)
             self.proxy = self.options.proxy
             return self.u2open(u2request)
         except u2.HTTPError, e:
@@ -179,8 +179,8 @@ class HttpAuthenticated(HttpTransport):
     def addcredentials(self, request):
         credentials = self.credentials()
         if not (None in credentials):
-            encoded = base64.encodestring(':'.join(credentials))
-            basic = 'Basic %s' % encoded[:-1]
+            encoded = base64.b64encode(':'.join(credentials))
+            basic = 'Basic %s' % encoded
             request.headers['Authorization'] = basic
                  
     def credentials(self):
